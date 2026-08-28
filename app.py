@@ -1,5 +1,5 @@
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 
 # إعداد واجهة الصفحة
 st.set_page_config(page_title="المعلم الذكي | English & Arabic", page_icon="🤖", layout="centered")
@@ -7,13 +7,12 @@ st.set_page_config(page_title="المعلم الذكي | English & Arabic", page
 st.title("🤖 المعلم الذكي للغة الإنجليزية والعربية")
 st.write("أدخل أي كلمة، جملة، أو مصطلح (تقني، هندسي، أو عام) لتشريح معناها وأمثلة عليها فوراً بالذكاء الاصطناعي.")
 
-# إعداد مفتاح API لـ Gemini
+# الاتصال بـ API باستخدام المكتبة الرسمية الجديدة
 try:
     api_key = st.secrets["GEMINI_API_KEY"]
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    client = genai.Client(api_key=api_key)
 except Exception as e:
-    st.error("يرجى إضافة GEMINI_API_KEY في Advanced Settings -> Secrets داخل Streamlit.")
+    st.error("يرجى التأكد من إضافة GEMINI_API_KEY داخل Secrets في Streamlit.")
 
 # واجهة المدخلات
 user_input = st.text_input("اكتب الكلمة أو الجملة هنا:", placeholder="مثال: Reservoir, Streamlit, أو جملة كاملة...")
@@ -32,7 +31,10 @@ if st.button("شرح وترجمة ✨") and user_input:
         """
         
         try:
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(
+                model='gemini-2.5-flash',
+                contents=prompt,
+            )
             st.success("تم التحليل بنجاح!")
             st.markdown(response.text)
         except Exception as e:
