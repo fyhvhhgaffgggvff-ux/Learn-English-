@@ -1,5 +1,6 @@
 streamlit
 supabase
 google-generativeai
+streamlit
 google-genai
 
